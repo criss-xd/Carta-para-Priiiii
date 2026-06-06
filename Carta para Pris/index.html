@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>Carta para Pris</title>
+		<style>
+			:root{--accent:#ff6b81;--bg:#f7f5f3;--cover-bg: url('wDB2zG.jpg');--photo-bg: url('pri 4.jpg')}
+			*{box-sizing:border-box}
+			html,body{height:100%;margin:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
+			body{background:linear-gradient(180deg,var(--bg),#fff);display:flex;align-items:center;justify-content:center}
+
+			/* Cover (ramo) */
+			main{width:100%;min-height:100dvh}
+			.cover{position:relative;width:100vw;left:50%;right:50%;transform:translateX(-50%);height:100dvh;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer}
+			.cover::before{content:"";position:absolute;inset:0;background-image:var(--cover-bg, url('https://images.unsplash.com/photo-1549576490-b0b4831ef60a?auto=format&fit=crop&w=1400&q=80'));background-size:cover !important;background-position:center center;background-repeat:no-repeat;background-attachment:fixed;filter:brightness(.8) saturate(.95);transition:transform 1.2s ease,opacity .9s ease}
+			.cover .bloom{position:relative;z-index:2;text-align:center;color:white}
+			.cover h1{font-size:3rem;margin:0;text-shadow:0 6px 18px rgba(0,0,0,.45)}
+			.hint{position:absolute;bottom:48px;left:50%;transform:translateX(-50%);color:#fff;background:rgba(0,0,0,.25);padding:8px 14px;border-radius:20px;font-size:.95rem;z-index:3}
+
+			/* Card */
+			.card{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.98) translateY(20px);width:min(860px,92%);max-width:860px;background:#fff;border-radius:16px;box-shadow:0 30px 60px rgba(10,10,10,.12);padding:28px;opacity:0;pointer-events:none;transition:all .9s cubic-bezier(.2,.9,.2,1)}
+			.card.open{opacity:1;transform:translate(-50%,-50%) scale(1) translateY(0);pointer-events:auto}
+			.card .top{display:flex;gap:20px;align-items:center}
+			.photo{width:160px;height:120px;border-radius:12px;flex:0 0 160px;background-image:var(--photo-bg, url('https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=60'));background-size:cover;background-position:center;box-shadow:0 8px 20px rgba(0,0,0,.12)}
+			.message{flex:1}
+			.message h2{margin:0;color:var(--accent)}
+			.message p{margin-top:10px;line-height:1.5;color:#333}
+
+			/* Decorative hearts */
+			.hearts{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+			.heart{position:absolute;width:18px;height:18px;background:var(--accent);transform:rotate(45deg);border-radius:4px 4px 0 0;opacity:.9;animation:float 4s linear infinite}
+			.heart::before,.heart::after{content:"";position:absolute;background:var(--accent);width:18px;height:18px;border-radius:50%}
+			.heart::before{top:-9px;left:0}
+			.heart::after{left:9px;top:0}
+
+			/* Edge and corner hearts (fixed decorations) */
+			.edge-hearts{position:fixed;inset:0;pointer-events:none;z-index:2}
+			.corner-heart{position:fixed;width:28px;height:28px;border-radius:4px 4px 0 0}
+			.corner-heart.top-left{top:18px;left:18px}
+			.corner-heart.top-right{top:18px;right:18px}
+			.corner-heart.bottom-left{bottom:18px;left:18px}
+			.corner-heart.bottom-right{bottom:18px;right:18px}
+
+			.border-heart{position:fixed;width:16px;height:16px;border-radius:4px 4px 0 0;opacity:.95}
+
+			/* inner visual element so we can sequence pop + pulse animations */
+			.heart-inner{width:100%;height:100%;background:var(--accent);border-radius:4px 4px 0 0;transform:rotate(45deg);box-shadow:0 6px 18px rgba(0,0,0,.12);opacity:0}
+
+			@keyframes pop{0%{transform:rotate(45deg) scale(.3);opacity:0}60%{transform:rotate(45deg) scale(1.05);opacity:1}100%{transform:rotate(45deg) scale(1);opacity:1}}
+			@keyframes pulse{0%{transform:rotate(45deg) scale(1)}50%{transform:rotate(45deg) scale(1.08)}100%{transform:rotate(45deg) scale(1)}}
+
+			@keyframes float{0%{transform:translateY(100vh) scale(.8) rotate(45deg);opacity:0}20%{opacity:1}100%{transform:translateY(-20vh) scale(1.1) rotate(45deg);opacity:0}}
+
+			/* Controls */
+			.controls{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+			.btn{background:transparent;border:1px solid #eee;padding:8px 12px;border-radius:8px;cursor:pointer}
+			.btn.primary{background:var(--accent);color:#fff;border-color:transparent}
+
+			/* Small screens */
+			/* On small and medium screens use scroll for performance */
+			@media (max-width:1024px){
+				.cover::before{background-attachment:scroll}
+			}
+
+			@media (max-width:520px){
+				.cover h1{font-size:2rem;padding:0 12px}
+				.hint{bottom:22px;padding:8px 12px;font-size:.9rem}
+				.photo{display:none}
+				.card{padding:16px;width:94%;left:50%;transform:translate(-50%,-50%) scale(1);max-width:420px;max-height:calc(100dvh - 90px);overflow:auto}
+				.hearts{display:block}
+				.btn{padding:10px 14px;font-size:1rem;border-radius:10px}
+			}
+
+			@media (max-width:360px){
+				.cover h1{font-size:1.6rem}
+				.hint{font-size:.85rem;padding:6px 10px}
+				.hearts{display:none}
+				.corner-heart,.border-heart{display:none}
+			}
+
+			@media (min-width:768px){
+				.cover::before{background-attachment:fixed}
+			}
+		</style>
+	</head>
+	<body>
+		<main>
+			<section class="cover" id="cover" aria-label="Portada - ramo de flores">
+				<div class="bloom">
+					<h1>Hola Bbcitaaaaaaa</h1>
+				</div>
+				<div class="hint">Haz click donde quieras bbcita, tu mandas aqui</div>
+			</section>
+
+			<article class="card" id="card" role="dialog" aria-hidden="true">
+				<div class="top">
+                    
+					<div class="photo" aria-hidden="true"></div>
+					<div class="message">
+						<h2>Para ti mamorrrrrrrr</h2>
+						<p>Para empezar con todo, perdón 😔. Perdon por ser tan intenso contigo. Queriendo obligarte a hacer cosas que directamente no te nace 😓, pero eso no significa que aun te ame y adore con todo mi corazon bby, lo siento tambien por ser tan blando, es que lit me gustas demasiado y pues me da miedo aveces a que me cambies or something. Pero ntp bby, estoy comenzando a sanar y comenzando a ser mejor hombre tanto para mi como para ti bby.</p>
+                        
+                        <p>Tambien te vengo a recordar que te adoro y te quiero mucho bbcita, quiero tener un futuro contigo por mas que todo sea ponga dificil entre nosotros, quiero que salgamos adelante en cada situacion dificil 😊. Y que en un futuro podamos estar orgullosos de lo que construimos. Con esta carta te prometo que te sere fiel y te amare hasta el final de mis dias bby 💕.</p>
+
+                        <p>So bby, pls nunca olvides que estoy y estare aqui para ti siempre, en las buenas y en las malas, I love you ❤️</p>
+						<div class="controls">
+							<button class="btn" id="restart">Volver</button>
+							
+						</div>
+					</div>
+				</div>
+				
+			</article>
+
+			<div class="hearts" id="hearts" aria-hidden="true"></div>
+		</main>
+
+		<script>
+
+		// Intentar cargar imágenes locales Hello Kitty (colócalas en la misma carpeta del proyecto):
+		// cover: hello_cover.jpg|png    photo: hello_photo.jpg|png
+		function trySetLocalImage(varName, candidates){
+			return new Promise(resolve=>{
+				let i=0;
+				function next(){
+					if(i>=candidates.length) return resolve(null);
+					const src = candidates[i++];
+					const img = new Image();
+					img.onload = ()=>{document.documentElement.style.setProperty(varName, `url('${src}')`);resolve(src)};
+					img.onerror = ()=>next();
+					img.src = src;
+				}
+				next();
+			});
+		}
+
+		(async function(){
+			const coverCandidates = ['hello_cover.jpg','hello_cover.png','hello1.jpg','hello1.png'];
+			const photoCandidates = ['hello_photo.jpg','hello_photo.png','hello2.jpg','hello2.png'];
+			await trySetLocalImage('--cover-bg', coverCandidates);
+			const foundPhoto = await trySetLocalImage('--photo-bg', photoCandidates);
+			if(foundPhoto){
+				const photoEl = document.querySelector('.photo');
+				if(photoEl) photoEl.style.backgroundImage = `var(--photo-bg)`;
+			}
+		})();
+
+			const cover = document.getElementById('cover');
+			const card = document.getElementById('card');
+			const hearts = document.getElementById('hearts');
+			const restart = document.getElementById('restart');
+			const openMore = document.getElementById('openMore');
+
+			cover.addEventListener('click', ()=>{
+				document.body.scrollTop = 0; document.documentElement.scrollTop = 0;
+				card.classList.add('open');
+				card.setAttribute('aria-hidden','false');
+				const count = window.innerWidth < 520 ? 6 : 12;
+				spawnHearts(count);
+			});
+
+			restart.addEventListener('click', ()=>{
+				card.classList.remove('open');
+				card.setAttribute('aria-hidden','true');
+				hearts.innerHTML = '';
+			});
+
+			openMore.addEventListener('click', ()=>{
+				alert('Si quieres, puedo añadir más secciones, fotos o música. ¿Qué te gustaría?');
+			});
+
+			function spawnHearts(n){
+				hearts.innerHTML = '';
+				for(let i=0;i<n;i++){
+					const h = document.createElement('div');
+					h.className='heart';
+					h.style.left = Math.random()*100 + '%';
+					h.style.bottom = (-10 - Math.random()*20)+'px';
+					h.style.opacity = (0.6 + Math.random()*0.5).toFixed(2);
+					h.style.width = h.style.height = (10 + Math.random()*22)+'px';
+					h.style.animationDuration = (3 + Math.random()*4)+'s';
+					hearts.appendChild(h);
+				}
+			}
+
+			// Create fixed corner and border hearts
+			function createEdgeHearts(){
+				let container = document.getElementById('edgeHearts');
+				if(!container){
+					container = document.createElement('div');
+					container.id = 'edgeHearts';
+					container.className = 'edge-hearts';
+					document.body.appendChild(container);
+				}
+				container.innerHTML = '';
+
+				// corners
+				const corners = ['top-left','top-right','bottom-left','bottom-right'];
+				corners.forEach(c => {
+					const el = document.createElement('div');
+					el.className = 'corner-heart ' + c;
+					container.appendChild(el);
+				});
+
+				// border hearts: distribute along edges
+				const perSide = Math.max(4, Math.floor(window.innerWidth/180));
+				for(let i=1;i<=perSide;i++){
+					const pct = (i/(perSide+1))*100;
+					// top
+					const ht = document.createElement('div'); ht.className='border-heart'; ht.style.top='10px'; ht.style.left=pct+'%'; container.appendChild(ht);
+					// bottom
+					const hb = document.createElement('div'); hb.className='border-heart'; hb.style.bottom='10px'; hb.style.left=pct+'%'; container.appendChild(hb);
+					// left
+					const hl = document.createElement('div'); hl.className='border-heart'; hl.style.left='10px'; hl.style.top=pct+'%'; container.appendChild(hl);
+					// right
+					const hr = document.createElement('div'); hr.className='border-heart'; hr.style.right='10px'; hr.style.top=pct+'%'; container.appendChild(hr);
+				}
+			}
+
+			document.addEventListener('DOMContentLoaded', ()=>{createEdgeHearts();});
+			window.addEventListener('resize', ()=>{createEdgeHearts();});
+		</script>
+	</body>
+</html>
+
