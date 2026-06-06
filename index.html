@@ -5,7 +5,7 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
 		<title>Carta para Pris</title>
 		<style>
-			:root{--accent:#ff6b81;--bg:#f7f5f3;--cover-bg: url('wDB2zG.jpg');--photo-bg: url('pri 4.jpg')}
+			:root{--accent:#ff6b81;--bg:#f7f5f3;--cover-bg:url('wDB2zG.jpg');--photo-bg:url('Pri 4.jpg')}
 			*{box-sizing:border-box}
 			html,body{height:100%;margin:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
 			body{background:linear-gradient(180deg,var(--bg),#fff);display:flex;align-items:center;justify-content:center}
@@ -136,8 +136,8 @@
 		}
 
 		(async function(){
-			const coverCandidates = ['hello_cover.jpg','hello_cover.png','hello1.jpg','hello1.png'];
-			const photoCandidates = ['hello_photo.jpg','hello_photo.png','hello2.jpg','hello2.png'];
+			const coverCandidates = ['eae.jpeg','eae.jpg','wDB2zG.jpg','hello_cover.jpg','hello_cover.jpeg','hello_cover.png','hello1.jpg','hello1.jpeg','hello1.png'];
+			const photoCandidates = ['pri.jpg','pri 2.jpg','pri 3.jpg','pri 4.jpg','pri 5.jpg','pri 6.jpg','pri 7.jpg','pri 8.jpg','pri 9.jpg','hello_photo.jpg','hello_photo.jpeg','hello_photo.png','hello2.jpg','hello2.jpeg','hello2.png'];
 			await trySetLocalImage('--cover-bg', coverCandidates);
 			const foundPhoto = await trySetLocalImage('--photo-bg', photoCandidates);
 			if(foundPhoto){
@@ -166,9 +166,11 @@
 				hearts.innerHTML = '';
 			});
 
-			openMore.addEventListener('click', ()=>{
-				alert('Si quieres, puedo añadir más secciones, fotos o música. ¿Qué te gustaría?');
-			});
+			if(openMore){
+				openMore.addEventListener('click', ()=>{
+					alert('Si quieres, puedo añadir más secciones, fotos o música. ¿Qué te gustaría?');
+				});
+			}
 
 			function spawnHearts(n){
 				hearts.innerHTML = '';
